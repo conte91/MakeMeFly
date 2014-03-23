@@ -8,5 +8,5 @@
 	path = MSP/ADC
 	url = https://github.com/conte91/MSP430ADC
 [submodule "MSP/Cbuf"]
-	path = MSP/Cbuf
+	path = MSP/CBuf
 	url = https://github.com/conte91/CBuf
