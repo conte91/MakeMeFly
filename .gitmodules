@@ -1,0 +1,12 @@
+[submodule "MSP/UART"]
+	path = MSP/UART
+	url = https://github.com/conte91/MSP430_UART
+[submodule "MSP/MSP_Dco"]
+	path = MSP/MSP_Dco
+	url = https://github.com/conte91/MSP430_DCO
+[submodule "MSP/ADC"]
+	path = MSP/ADC
+	url = https://github.com/conte91/MSP430ADC
+[submodule "MSP/Cbuf"]
+	path = MSP/Cbuf
+	url = https://github.com/conte91/CBuf
