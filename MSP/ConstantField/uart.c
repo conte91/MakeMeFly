@@ -14,6 +14,7 @@ void initUart(unsigned int baud)
  UCA0BR1 = 6; // 16MHz 9600
  UCA0MCTL = 0;
  UCA0CTL1 &= ~UCSWRST; /** Initialize USCI state machine */
+ UC0IE |= UCA0RXIE;
 }
 
 void uartPut(unsigned char x){

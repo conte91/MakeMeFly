@@ -7,7 +7,7 @@
 #define PWM_PERIOD 4000 /* 4 kHz PWM frequency */
 #define FIFTY_PWM_PERIODS 400000
 #define DESIRED_VOLTAGE (1.0)
-#define TICK_PER_CONTROL 3
+#define TICK_PER_CONTROL 1
 #define E (2.71828182845905)
 
 /* We sample at 500Hz
@@ -24,79 +24,21 @@ float desiredLevitatingSensorValue;
 float sensorMagnetSlope;
 float minDrivingSensorValue;
 float fastCubRoot(float f);
-float BMax, BMin;
+float BMax, BMin, B;
 float BZero;
-float growingRate;
-uint16_t tau;
+float growingRate, upRate, downRate;
+float gainBase=1, gainPos=0.01, basePosition=300.0;
+char coilOn, squareWave=0, outputUp=1, outputDown=1;
+float tauUp, tauDown;
 uint16_t lastADC;
 
 
-static inline float BOf(uint16_t reading){
+static inline float BOf(float reading){
   return -(reading-BMin);
 }
-#if 0
-  float Q_rsqrt( float number )
-  {
-    int32_t i;
-    float x2, y;
-    const float threehalfs = 1.5F;
-
-    x2 = number * 0.5F;
-    y  = number;
-    i  = * ( int32_t * ) &y;                       // evil floating point bit level hacking
-    i  = 0x5f3759df - ( i >> 1 );               // what the fuck? 
-    y  = * ( float * ) &i;
-    y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
-  //	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
-
-    return y;
-  }
-
-
-  float sqr( float x ) { return x * x; }
-  // meaning of 'precision': the returned answer should be base^x, where
-  //                         x is in [power-precision/2,power+precision/2]
-  float mypow( float base, float power, float precision )
-  {   
-    char invert;
-    if(power < 0){
-      invert=1;
-      power=-power;
-    }
-    float result=1;
-    while(power >= 10){
-      result*=result;
-      power/=2;
-      precision/=2;
-    }
-    while(power >= 1){
-      power-=1;
-      result*=base;
-    }
-
-    /*
-     if ( power < 0 ) return 1 / mypow( base, -power, precision );
-     */
-
-    /*
-     if ( power >= 10 ) return sqr( mypow( base, power/2, precision/2 ) );
-     */
-     /*
-     if ( power >= 1 ) return base * mypow( base, power-1, precision );
-     */
-     if ( precision >= 1 ) return 1/Q_rsqrt( base );
-     return 1/Q_rsqrt( mypow( base, power*2, precision*2 ) );
-
-
-
-     if(invert){
-       result=1/result;
-     }
-     return result;
-  }
-
-  float power( float base, float p ) { return mypow( base, p, .00001 );}
-#endif
+/*static inline float B(){
+  return -(lastADC-BMin);
+  }*/
 static inline void wait(){
   while(!iMustDoTheControl);
   iMustDoTheControl=0;
@@ -106,9 +48,9 @@ static inline void waitN(const int n){
     wait();
   }
 }
-
 static inline void coil(const int value){
   P1OUT = value ? P1OUT | BIT6 : P1OUT & ~BIT6;
+  coilOn=value;
 }
 
 static inline void send(const uint16_t value){
@@ -122,12 +64,12 @@ void heatUp(){
     coil(1);
     for(int i=0; i<500; ++i){
       wait();
-      if(i%10) send(lastADC);
+      if(!(i%8)) send(lastADC);
     }
     coil(0);
     for(int i=0; i<500; ++i){
       wait();
-      if(i%10) send(lastADC);
+      if(!(i%8)) send(lastADC);
     }
   }
 }
@@ -141,40 +83,83 @@ static inline float averageADC(const int n){
   }
   return avg;
 }
-char tareSensorValues(){
-  /** Wait for the magnet to stabilize, then take the sensor reading */
-  coil(0);
-  iMustDoTheControl=0;
-  waitN(500);
-  BMin=averageADC(100);
-  coil(1);
-  waitN(500);
-  BMax=averageADC(100);
-  coil(0);
-  waitN(500);
-
-  float valueWhichIHaveToSurpass=(BMin-BMax)*0.37+BMax;
+static inline uint16_t tareUp(){
+  uint16_t tau;
+  /** Ascending (charging) Tau */
+  float valueWhichIHaveToSurpass=(BMax)*0.63;
   /** DESCENDING exp */
-  while(lastADC>BMin*1.05 || lastADC<valueWhichIHaveToSurpass );
-  wait();
+  coil(0);
+  waitN(500);
   tau=0;
   coil(1);
   while(1){
-    while(lastADC>valueWhichIHaveToSurpass){
+    wait();
+    if(B<valueWhichIHaveToSurpass){
       tau++;
-      wait();
+      continue;
     }
+    break;
     /** Ensure we really passed the point */
     wait();
-    if(lastADC<valueWhichIHaveToSurpass*1.05){
+    if(B>valueWhichIHaveToSurpass*0.95){
       /** Found it!! */
       break;
     }
     tau++;
   }
-  coil(0);
+  return tau;
+}
+
+static inline uint16_t tareDown(){
+  uint16_t tau;
+  /** Descending (discharging) Tau */
+  float valueWhichIHaveToSurpass=(BMax)*(1-0.63f);
+  coil(1);
   waitN(500);
-  growingRate=0.931062779704023;
+  tauDown=0;
+  coil(0);
+  while(1){
+    wait();
+    if(B>valueWhichIHaveToSurpass){
+      tau++;
+      continue;
+    }
+    break;
+    /** Ensure we really passed the point */
+    wait();
+    if(B<valueWhichIHaveToSurpass*1.05){
+      /** Found it!! */
+      break;
+    }
+    tau++;
+  }
+  return tau;
+}
+
+char tareSensorValues(){
+  /** Wait for the magnet to stabilize, then take the sensor reading */
+  coil(0);
+  iMustDoTheControl=0;
+  waitN(1000);
+  BMin=averageADC(100);
+  coil(1);
+  waitN(1000);
+  BMax=averageADC(100);
+  BMax=BOf(BMax);
+  coil(0);
+  waitN(1000);
+
+  uint16_t sumUp=0, sumDown=0;
+  for(int i=0; i<10; ++i){
+    sumUp+=tareUp();
+    sumDown+=tareDown();
+  }
+  tauUp=((float)sumUp-5.0)/10;
+  tauDown=((float)sumDown-5.0)/10;
+
+  upRate=1-1.0f/(1+1.0f/tauUp+1.0f/tauUp/tauUp/2.0f);
+
+  downRate=-1+1/(1+1.0f/tauDown+1.0f/tauDown/tauDown/2.0f);
 
   return 1;
 }
@@ -205,7 +190,7 @@ void setupADC(){
   P1DIR&=~BIT3;
   ADC10CTL1 = INCH_3 + SHS_1 + CONSEQ_2 + ADC10DIV_4 + ADC10SSEL_3;         // Channel 3, Trigger on TA0.0 output rising edge, source is SMCLK/8 (->256/op)
 
-  ADC10CTL0 = SREF_0 + ADC10SHT_3 + ADC10SR + ADC10ON + ADC10IE;  // Vcc & Vss as reference, Sample and hold for 64 Clock cycles, ADC on, ADC interrupt enable
+  ADC10CTL0 = SREF_0 + ADC10SHT_2 + ADC10ON + ADC10IE;  // Vcc & Vss as reference, Sample and hold for 64 Clock cycles, ADC on, ADC interrupt enable
   ADC10AE0 |= BIT3;                         // ADC input enable P1.3
   ADC10CTL0 |= ENC; /** Fight! */
   //TACCTL1 = OUTMOD_7; /* No output */
@@ -233,85 +218,90 @@ int main(void)
   /** Tare upper and lower values for the sensor */
   P1OUT |= BIT0;
   heatUp();
-  coil(0);
-  for(int i=0; i<500; ++i){
-    wait();
-    if(!(i%10)) send(lastADC);
-  }
-  while(!tareSensorValues());
+  tareSensorValues();
   /** Mimic the exponential to human-ensure it's ok */
-  /*for(int i=0; i<500; ++i){
-    float f=BMax+(BMin-BMax)*power(E,-((float)i)/tau);
-    if(i%10)send((uint16_t)f);
-    waitN(10);
-  }*/
-  /** Now with multiplication */
-  {
+  /** with multiplication */
+  /*{
     float currentValue=1;
     for(int i=0; i<500; ++i){
-      currentValue*=growingRate;
-      if(!(i % 10))send((uint16_t)(currentValue*(BMin-BMax)+BMax));
-      waitN(10);
+    currentValue*=growingRate;
+    if(!(i % 10))send((uint16_t)(currentValue*(BMin-BMax)+BMax));
+    waitN(10);
     }
-  }
+    }*/
 
   P1OUT &= ~BIT0;
 
 
   /** Start control */
   unsigned int i=0, j=0;
-  char coilOn=0;
-  float currentValue=1, startB=BMin;
+  coil(0);
+  waitN(1000);
+  float currentValue=0;
   while(1){
     wait();
+    if(power < currentValue){
+      coil(0);
+    }
+    else{
+      coil(1);
+    }
+    /** Updates the hypothetical mag field */
+    if(coilOn){
+      currentValue+=(1-currentValue)*upRate;
+    }
+    else{
+      currentValue+=currentValue*downRate;
+    }
+    if(currentValue>1){
+      currentValue=1;
+    }
+    if(currentValue<0){
+      currentValue=0;
+    }
+
     if(++j==TICK_PER_CONTROL){
       j=0;
-    P1OUT |= BIT0;
-    i++;
-    if(currentValue>1e-4){
-      currentValue=currentValue*growingRate;
-    }
-    float currentB=currentValue*(startB-(coilOn ? BMax : BMin))+(coilOn ? BMax : BMin);
-    if(currentB>BMin){
-      currentB=BMin;
-    }
-    if(currentB<BMax){
-      currentB=BMax;
-    }
-    float filteredValue=lastADC-currentB;
-
-#if 0
-    if((filteredValue > -345 && (!coilOn)) || (filteredValue < -355 && coilOn)){
-      currentValue=1;
-      startB=currentB;
-      if(coilOn){
-        coil(0);
-        coilOn=0;
+      i++;
+      if(i==200){
+        i=0;
+      }
+      P1OUT |= BIT0;
+      float coilB=currentValue*BMax;
+      float filteredValue=B-coilB;
+      if(squareWave){
+        if(i==0){
+          coil(0);
+        }
+        if(i==100){
+          coil(1);
+        }
+        if(!(i%8)){
+          if((outputUp && coilOn) || (outputDown && !coilOn)){
+            send(filteredValue);
+          }
+        }
       }
       else{
-        coil(1);
-        coilOn=1;
+        float error=basePosition-filteredValue;
+        float power=gainPos*error+gainBase;
+        if(power < 0){
+          power=0;
+        }
+        if(power > 1){
+          power=1;
+        }
+        if(filteredValue < 20){
+          power=0;
+        }
+        if(!(i%8)){
+          if((outputUp && coilOn) || (outputDown && !coilOn)){
+            send (power *256);
+          }
+        }
+        
       }
-    }
-#else
-    if(i==100){
-      i=0;
-      currentValue=1;
-      startB=currentB;
-      if(coilOn){
-        coil(0);
-        coilOn=0;
-      }
-      else{
-        coil(1);
-        coilOn=1;
-      }
-    }
-#endif
-    if(!(i%8)){
-      send(filteredValue);
-    }
-    P1OUT &= ~BIT0;
+      P1OUT &= ~BIT0;
     }
 
   }
@@ -323,19 +313,56 @@ int main(void)
 #pragma vector=ADC10_VECTOR
 __interrupt void ADC10_ISR (void)
 {
-    lastADC = ADC10MEM & 0x03FF;                // Assigns the value held in ADC10MEM to the integer called ADC_value
-    countControl=0;
-    iMustDoTheControl=1;
+  lastADC = ADC10MEM & 0x03FF;                // Assigns the value held in ADC10MEM to the integer called ADC_value
+  B = -(lastADC-BMin);
+  //countControl=0;
+  iMustDoTheControl=1;
 }
+
 #pragma vector=USCIAB0RX_VECTOR
 __interrupt void USCI0RX_ISR(void)
 {
-  if(UCA0RXBUF=='G') {
-    growingRate+=0.01;
+  char x=UCA0RXBUF;
+  switch(x){
+    case 'G':
+      gainPos+=0.001;
+      break;
+    case 'g':
+      gainPos-=0.001;
+      break;
+    case 'L':
+      basePosition+=1;
+      break;
+    case 'l':
+      basePosition-=1;
+      break;
+    case 'p':
+      gainBase-=0.001;
+      break;
+    case 'P':
+      gainBase+=0.001;
+      break;
+    case 's':
+      squareWave=!squareWave;
+      break;
+    case 'd':
+      downRate-=0.001;
+      break;
+    case 'D':
+      downRate+=0.001;
+      break;
+    case 'u':
+      upRate-=0.001;
+      break;
+    case 'U':
+      upRate+=0.001;
+      break;
+    case 'o':
+      outputDown=!outputDown;
+      break;
+    case 'O':
+      outputUp=!outputUp;
+      break;
   }
-  else if(UCA0RXBUF=='g'){
-    growingRate-=0.01;
-  }
-
 }
 
