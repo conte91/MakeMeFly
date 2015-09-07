@@ -4,7 +4,7 @@
 #include <MSP_Dco/dco_custom_calibration.h>
 
 #define PWM_TICK 16 /* 1MHz */
-#define PWM_PERIOD 4000 /* 4 kHz PWM frequency */
+#define PWM_PERIOD 1000 /* 16 kHz PWM frequency */
 #define FIFTY_PWM_PERIODS 400000
 #define DESIRED_VOLTAGE (1.0)
 #define TICK_PER_CONTROL 1
@@ -18,19 +18,23 @@
  */
 
 int controlTimerN=0;
-char iMustDoTheControl=0, countControl=0;
+volatile char iMustDoTheControl=0;
+char countControl=0;
 float minMagnetSensorValue, maxMagnetSensorValue;
 float desiredLevitatingSensorValue;
 float sensorMagnetSlope;
 float minDrivingSensorValue;
 float fastCubRoot(float f);
-float BMax, BMin, B;
+float BMax, BMin;
+volatile float B;
 float BZero;
-float growingRate, upRate, downRate;
-float gainBase=1, gainPos=0.01, basePosition=300.0;
-char coilOn, squareWave=0, outputUp=1, outputDown=1;
+volatile float growingRate, upRate, downRate;
+volatile float gainBase=1, gainPos=0.01, basePosition=300.0;
+char coilOn;
+volatile char squareWave=0;
+volatile char outputUp=1, outputDown=1;
 float tauUp, tauDown;
-uint16_t lastADC;
+volatile uint16_t lastADC;
 
 
 static inline float BOf(float reading){
@@ -64,12 +68,12 @@ void heatUp(){
     coil(1);
     for(int i=0; i<500; ++i){
       wait();
-      if(!(i%8)) send(lastADC);
+      if(!(i%32)) send(lastADC);
     }
     coil(0);
     for(int i=0; i<500; ++i){
       wait();
-      if(!(i%8)) send(lastADC);
+      if(!(i%32)) send(lastADC);
     }
   }
 }
@@ -237,9 +241,10 @@ int main(void)
   unsigned int i=0, j=0;
   coil(0);
   waitN(1000);
-  float currentValue=0;
+  float currentValue=0, power=0;
   while(1){
     wait();
+    P1OUT |= BIT0;
     if(power < currentValue){
       coil(0);
     }
@@ -266,7 +271,6 @@ int main(void)
       if(i==200){
         i=0;
       }
-      P1OUT |= BIT0;
       float coilB=currentValue*BMax;
       float filteredValue=B-coilB;
       if(squareWave){
@@ -276,7 +280,7 @@ int main(void)
         if(i==100){
           coil(1);
         }
-        if(!(i%8)){
+        if(!(i%32)){
           if((outputUp && coilOn) || (outputDown && !coilOn)){
             send(filteredValue);
           }
@@ -284,7 +288,7 @@ int main(void)
       }
       else{
         float error=basePosition-filteredValue;
-        float power=gainPos*error+gainBase;
+        power=gainPos*error+gainBase;
         if(power < 0){
           power=0;
         }
@@ -294,16 +298,16 @@ int main(void)
         if(filteredValue < 20){
           power=0;
         }
-        if(!(i%8)){
+        if(!(i%32)){
           if((outputUp && coilOn) || (outputDown && !coilOn)){
             send (power *256);
           }
         }
         
       }
-      P1OUT &= ~BIT0;
     }
 
+    P1OUT &= ~BIT0;
   }
 
   return 0;

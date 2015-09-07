@@ -43,7 +43,7 @@ static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
 static  void ADCHandler(void);
-static  void TimerA0Handler(void);
+static  void Timer0BHandler(void);
 static void UARTHandler(void);
 
 //*****************************************************************************
@@ -112,7 +112,7 @@ void (* const g_pfnVectors[])(void) =
   ADCHandler,                      // ADC Sequence 2
   ADCHandler,                      // ADC Sequence 3
   IntDefaultHandler,                      // Watchdog timer
-  TimerA0Handler,                      // Timer 0 subtimer A
+  IntDefaultHandler,                      // Timer 0 subtimer A
   IntDefaultHandler,                      // Timer 0 subtimer B
   IntDefaultHandler,                      // Timer 1 subtimer A
   IntDefaultHandler,                      // Timer 1 subtimer B
@@ -368,23 +368,15 @@ void ADCHandler(void){
   ADCIntClear(ADC0_BASE,0);
 }
 
-void TimerA0Handler(void){
-}
 
 void UARTHandler(void){
   char x =UARTCharGet(UART0_BASE);
   switch(x){
     case 'G':
-      gainPos+=0.001;
+      gainPos+=0.0001;
       break;
     case 'g':
-      gainPos-=0.001;
-      break;
-    case 'L':
-      basePosition+=1;
-      break;
-    case 'l':
-      basePosition-=1;
+      gainPos-=0.0001;
       break;
     case 'p':
       gainBase-=0.001;
@@ -396,22 +388,25 @@ void UARTHandler(void){
       squareWave=!squareWave;
       break;
     case 'd':
-      downRate-=0.001;
+      downRate-=0.0001;
       break;
     case 'D':
-      downRate+=0.001;
+      downRate+=0.0001;
       break;
     case 'u':
-      upRate-=0.001;
+      upRate-=0.0001;
       break;
     case 'U':
-      upRate+=0.001;
+      upRate+=0.0001;
       break;
     case 'o':
       outputDown=!outputDown;
       break;
     case 'O':
       outputUp=!outputUp;
+      break;
+    case 'W':
+      mustWriteData=1;
       break;
   }
 }

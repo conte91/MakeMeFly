@@ -1,0 +1,10 @@
+.ycm_extra_conf.py*
+*~
+*.swp
+Sources/
+*.bak
+#Quartus stuff
+output_files/
+db/
+simulation/
+work/

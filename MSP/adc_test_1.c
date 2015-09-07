@@ -42,15 +42,16 @@ void spettacolino2(){
 }
 
 void sendByte(unsigned char byte){
-  int value;
-  char send=0;
+  unsigned int value=0;
+  unsigned int send=0;
   P1OUT|=BIT0;
 
   /** Take only the recentmost value from ADC, if any */
   while(ADCAvailable()){
-    send=1;
-    value=ADCnext();
+    send++;
+    value+=ADCnext();
   }
+  value/=send;
 
   if(send){
     uartPut(value&0x00FF);

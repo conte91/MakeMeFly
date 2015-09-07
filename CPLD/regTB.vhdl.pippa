@@ -1,0 +1,42 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY regTB IS
+  END regTB;
+
+ARCHITECTURE regTB_beh OF regTB IS
+  SIGNAL writeEn: std_logic:='0';
+  SIGNAL input: std_logic;
+  SIGNAL clk: std_logic;
+  SIGNAL output: std_logic_vector(7 DOWNTO 0);
+BEGIN
+  reg1: ENTITY work.Reg GENERIC MAP(8) PORT MAP (input, output, clk, writeEn);
+  clkp: PROCESS BEGIN
+    clk <= '1';
+    WAIT FOR 100 ns;
+    clk <= '0';
+    WAIT FOR 100 ns;
+  END PROCESS;
+inp: PROCESS BEGIN
+  input <= '1';
+  FOR i IN 1 TO 4 LOOP
+    WAIT UNTIL clk'event AND clk='1';
+  END LOOP;
+  input <= '0';
+  FOR i IN 1 TO 4 LOOP
+    WAIT UNTIL clk'event AND clk='1';
+  END LOOP;
+END PROCESS;
+wp: PROCESS BEGIN
+  writeEn <= '0';
+  FOR i in 1 TO 3 LOOP
+    WAIT UNTIL clk'event AND clk='1';
+  END LOOP;
+  writeEn <= '1';
+  FOR i in 1 TO 3 LOOP
+    WAIT UNTIL clk'event AND clk='1';
+  END LOOP;
+END PROCESS;
+
+END regTB_beh;
+

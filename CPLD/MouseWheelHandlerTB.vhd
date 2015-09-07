@@ -1,0 +1,5 @@
+ENTITY MouseHandlerTB IS
+END MouseHandlerTB;
+
+ARCHITECTURE TB OF MouseHandlerTB IS
+BEGIN
