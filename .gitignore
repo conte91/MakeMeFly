@@ -13,3 +13,8 @@ work/
 *.kicad_pcb-bak
 *-eps-converted-to.pdf
 *.log
+*.rpt
+*.kpt
+transcript
+incremental_db
+*.wlf
