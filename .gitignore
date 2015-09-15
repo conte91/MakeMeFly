@@ -8,3 +8,6 @@ output_files/
 db/
 simulation/
 work/
+*.aux
+*.lib
+*.kicad_pcb-bak

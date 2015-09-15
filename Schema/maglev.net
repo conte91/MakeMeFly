@@ -1,0 +1,838 @@
+# EESchema Netlist Version 1.1 created  mar 08 set 2015 05:09:29 CEST
+(
+ ( /55ED9514 $noname  J101 TI_BOOSTER_40_J1 {Lib=TI_BOOSTER_40_J1}
+  (    1 ? )
+  (    2 /Mouse_input_control/D5 )
+  (    3 /Mouse_input_control/D0 )
+  (    4 /Mouse_input_control/D1 )
+  (    5 ? )
+  (    6 ? )
+  (    7 /Mouse_input_control/D4 )
+  (    8 MOSI )
+  (    9 WEN )
+  (   10 /CS )
+ )
+ ( /55ED951A $noname  J102 TI_BOOSTER_40_J2 {Lib=TI_BOOSTER_40_J2}
+  (    1 GND )
+  (    2 /Mouse_input_control/D2 )
+  (    3 ? )
+  (    4 /Mouse_input_control/RST )
+  (    5 ? )
+  (    6 /Mouse_input_control/D7 )
+  (    7 /Mouse_input_control/D6 )
+  (    8 MISO )
+  (    9 ? )
+  (   10 SPICLK )
+ )
+ ( /55ED9520 $noname  J103 TI_BOOSTER_40_J3 {Lib=TI_BOOSTER_40_J3}
+  (    1 5V )
+  (    2 GND )
+  (    3 ? )
+  (    4 ? )
+  (    5 ? )
+  (    6 ? )
+  (    7 ? )
+  (    8 ? )
+  (    9 B_SENSE )
+  (   10 ? )
+ )
+ ( /55ED9526 $noname  J104 TI_BOOSTER_40_J4 {Lib=TI_BOOSTER_40_J4}
+  (    1 ? )
+  (    2 PWR_OUT )
+  (    3 /Mouse_input_control/D3 )
+  (    4 ? )
+  (    5 ? )
+  (    6 ? )
+  (    7 ? )
+  (    8 ? )
+  (    9 ? )
+  (   10 N-000004 )
+ )
+ ( /55EE361C $noname  SW101 SW_PUSH {Lib=SW_PUSH}
+  (    1 GND )
+  (    2 N-000004 )
+ )
+ ( /55EE4131 $noname  R101 100 {Lib=R}
+  (    1 /Mouse_input_control/OVERFLOW )
+  (    2 N-000043 )
+ )
+ ( /55EE4196 $noname  R102 100 {Lib=R}
+  (    1 /Mouse_input_control/UNDERFLOW )
+  (    2 N-000044 )
+ )
+ ( /55EE4525 $noname  D101 GREEN {Lib=LED}
+  (    1 N-000043 )
+  (    2 GND )
+ )
+ ( /55EE467E $noname  D102 YELLOW {Lib=LED}
+  (    1 N-000044 )
+  (    2 GND )
+ )
+ ( /55EFA0AA $noname  U101 A25L080 {Lib=A25L080}
+  (    1 /CS )
+  (    2 MISO )
+  (    3 WEN )
+  (    4 GND )
+  (    5 MOSI )
+  (    6 SPICLK )
+  (    7 3.3V )
+  (    8 3.3V )
+ )
+ ( /55EE3DE3 $noname  P101 CONN_2 {Lib=CONN_2}
+  (    1 GND )
+  (    2 12V )
+ )
+ ( /55ED8DC3/55ED7EBD $noname  U402 EPM7032AELC44-10N {Lib=EPM7032AELC44-10N}
+  (    1 ? )
+  (    2 ? )
+  (    3 3.3V )
+  (    4 ? )
+  (    5 ? )
+  (    6 ? )
+  (    7 ? )
+  (    8 ? )
+  (    9 ? )
+  (   10 GND )
+  (   11 ? )
+  (   12 ? )
+  (   13 ? )
+  (   14 ? )
+  (   15 3.3V )
+  (   16 ? )
+  (   17 ? )
+  (   18 /Mouse_input_control/D0 )
+  (   19 /Mouse_input_control/D1 )
+  (   20 /Mouse_input_control/D2 )
+  (   21 /Mouse_input_control/D3 )
+  (   22 GND )
+  (   23 3.3V )
+  (   24 /Mouse_input_control/D4 )
+  (   25 /Mouse_input_control/D5 )
+  (   26 /Mouse_input_control/D6 )
+  (   27 /Mouse_input_control/D7 )
+  (   28 ? )
+  (   29 N-000081 )
+  (   30 GND )
+  (   31 N-000069 )
+  (   32 ? )
+  (   33 N-000064 )
+  (   34 ? )
+  (   35 3.3V )
+  (   36 /Mouse_input_control/RST )
+  (   37 /Mouse_input_control/UNDERFLOW )
+  (   38 ? )
+  (   39 /Mouse_input_control/OVERFLOW )
+  (   40 ? )
+  (   41 ? )
+  (   42 GND )
+  (   43 N-000090 )
+  (   44 ? )
+ )
+ ( /55ED8DC3/55ED7F7A $noname  R401 100 {Lib=R}
+  (    1 N-000087 )
+  (    2 N-000081 )
+ )
+ ( /55ED8DC3/55ED7F89 $noname  D401 1N5226B {Lib=ZENER}
+  (    1 GND )
+  (    2 N-000081 )
+ )
+ ( /55ED8DC3/55ED7F98 $noname  R404 10k {Lib=R}
+  (    1 N-000081 )
+  (    2 GND )
+ )
+ ( /55ED8DC3/55ED804A $noname  R402 100 {Lib=R}
+  (    1 N-000086 )
+  (    2 N-000069 )
+ )
+ ( /55ED8DC3/55ED8050 $noname  D402 1N5226B {Lib=ZENER}
+  (    1 GND )
+  (    2 N-000069 )
+ )
+ ( /55ED8DC3/55ED8056 $noname  R405 10k {Lib=R}
+  (    1 N-000069 )
+  (    2 GND )
+ )
+ ( /55ED8DC3/55ED8067 $noname  R403 100 {Lib=R}
+  (    1 N-000060 )
+  (    2 N-000064 )
+ )
+ ( /55ED8DC3/55ED806D $noname  D403 1N5226B {Lib=ZENER}
+  (    1 GND )
+  (    2 N-000064 )
+ )
+ ( /55ED8DC3/55ED8073 $noname  R406 10k {Lib=R}
+  (    1 N-000064 )
+  (    2 GND )
+ )
+ ( /55ED8DC3/55ED84B7 $noname  C401 4.7n {Lib=C}
+  (    1 N-000061 )
+  (    2 GND )
+ )
+ ( /55ED8DC3/55ED84E1 $noname  R408 10k {Lib=R}
+  (    1 N-000088 )
+  (    2 N-000091 )
+ )
+ ( /55ED8DC3/55ED84F0 $noname  R407 2.2k {Lib=R}
+  (    1 5V )
+  (    2 N-000091 )
+ )
+ ( /55ED8DC3/55ED864A $noname  C402 2.2u {Lib=CP1}
+  (    1 N-000088 )
+  (    2 GND )
+ )
+ ( /55ED8DC3/55ED87AE $noname  R409 100 {Lib=R}
+  (    1 N-000089 )
+  (    2 N-000090 )
+ )
+ ( /55ED8DC3/55ED87BD $noname  R410 10k {Lib=R}
+  (    1 N-000090 )
+  (    2 GND )
+ )
+ ( /55ED8DC3/55ED87CC $noname  D404 1N5226B {Lib=ZENER}
+  (    1 GND )
+  (    2 N-000090 )
+ )
+ ( /55ED8DC3/55EDA41A $noname  X401 MOUSE_BUTTON_IF {Lib=MOUSE_BUTTON_IF}
+  (    1 5V )
+  (    2 N-000087 )
+  (    3 N-000086 )
+  (    4 N-000060 )
+ )
+ ( /55ED8DC3/55EFD7FE $noname  U203 LM555CN {Lib=LM555CN}
+  (    1 GND )
+  (    2 N-000088 )
+  (    3 N-000089 )
+  (    4 5V )
+  (    5 N-000061 )
+  (    6 N-000088 )
+  (    7 N-000091 )
+  (    8 5V )
+ )
+ ( /55ED1FDC/55ED2079 $noname  C207 100n {Lib=C}
+  (    1 12V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED2089 $noname  C210 1000u {Lib=CP1}
+  (    1 5V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED208F $noname  C208 100n {Lib=C}
+  (    1 5V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED20AA $noname  C206 100n {Lib=C}
+  (    1 12V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED20B0 $noname  C211 100n {Lib=CP1}
+  (    1 3.3V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED20B6 $noname  C209 2.2u {Lib=C}
+  (    1 3.3V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED20C6 TO-220  U202 LM1086CT-3.3 {Lib=LM1086CT-3.3}
+  (    1 GND )
+  (    2 3.3V )
+  (    3 12V )
+ )
+ ( /55ED1FDC/55ED20EE $noname  C213 2.2u {Lib=CP1}
+  (    1 N-000050 )
+  (    2 N-000049 )
+ )
+ ( /55ED1FDC/55ED20F4 $noname  D201 1N4007 {Lib=1N4007}
+  (    1 N-000049 )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED2108 $noname  D202 1N4007 {Lib=1N4007}
+  (    1 -12V )
+  (    2 N-000049 )
+ )
+ ( /55ED1FDC/55ED2112 $noname  C214 470u {Lib=CP1}
+  (    1 GND )
+  (    2 -12V )
+ )
+ ( /55ED1FDC/55ED2124 $noname  C205 100n {Lib=C}
+  (    1 N-000051 )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED2132 $noname  C212 4.7n {Lib=C}
+  (    1 N-000047 )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55ED213D $noname  R202 10k {Lib=R}
+  (    1 N-000047 )
+  (    2 N-000048 )
+ )
+ ( /55ED1FDC/55ED2143 $noname  R201 3.3k {Lib=R}
+  (    1 N-000050 )
+  (    2 N-000048 )
+ )
+ ( /55ED1FDC/55ED223E $noname  C215 100n {Lib=C}
+  (    1 -12V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55EE23C0 $noname  U201 7805 {Lib=7805}
+  (  GND GND )
+  (   VI 12V )
+  (   VO 5V )
+ )
+ ( /55ED1FDC/55EF93EB $noname  C201 1000u {Lib=CP1}
+  (    1 12V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55EF93F1 $noname  C202 100n {Lib=C}
+  (    1 12V )
+  (    2 GND )
+ )
+ ( /55ED1FDC/55EF9515 $noname  U303 LM555CN {Lib=LM555CN}
+  (    1 GND )
+  (    2 N-000047 )
+  (    3 N-000050 )
+  (    4 12V )
+  (    5 N-000051 )
+  (    6 N-000047 )
+  (    7 N-000048 )
+  (    8 12V )
+ )
+ ( /55ED7972/55ED7DED $noname  Q301 LM395T {Lib=LM395T}
+  (    1 PWR_OUT )
+  (    2 GND )
+  (    3 N-000054 )
+ )
+ ( /55ED7972/55ED7DF5 $noname  L301 INDUCTOR {Lib=INDUCTOR}
+  (    1 12V )
+  (    2 N-000054 )
+ )
+ ( /55ED7972/55ED7E08 $noname  U302 LM318N {Lib=LM318N}
+  (    1 ? )
+  (    2 N-000052 )
+  (    3 N-000056 )
+  (    4 -12V )
+  (    5 ? )
+  (    6 N-000058 )
+  (    7 12V )
+  (    8 ? )
+ )
+ ( /55ED7972/55ED7E12 $noname  R302 1k {Lib=R}
+  (    1 N-000053 )
+  (    2 N-000052 )
+ )
+ ( /55ED7972/55ED7E18 $noname  R303 10k {Lib=R}
+  (    1 N-000052 )
+  (    2 GND )
+ )
+ ( /55ED7972/55ED7E2A $noname  R301 1k {Lib=R}
+  (    1 N-000058 )
+  (    2 N-000053 )
+ )
+ ( /55ED7972/55ED7E32 $noname  U301 SS495 {Lib=SS495}
+  (    1 5V )
+  (    2 GND )
+  (    3 N-000056 )
+ )
+ ( /55ED7972/55ED84CD $noname  R304 100 {Lib=R}
+  (    1 N-000058 )
+  (    2 B_SENSE )
+ )
+ ( /55ED7972/55ED84DC $noname  D302 1N5226B {Lib=ZENER}
+  (    1 GND )
+  (    2 B_SENSE )
+ )
+ ( /55ED7972/55ED8B7F $noname  D301 1N4007 {Lib=DIODE}
+  (    1 N-000054 )
+  (    2 12V )
+ )
+)
+*
+{ Allowed footprints by component:
+$component R101
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R102
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component D101
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component D102
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component R401
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component D401
+ D?
+ SO*
+ SM*
+$endlist
+$component R404
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R402
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component D402
+ D?
+ SO*
+ SM*
+$endlist
+$component R405
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R403
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component D403
+ D?
+ SO*
+ SM*
+$endlist
+$component R406
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C401
+ SM*
+ C?
+ C1-1
+$endlist
+$component R408
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R407
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C402
+ CP*
+ SM*
+$endlist
+$component R409
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R410
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component D404
+ D?
+ SO*
+ SM*
+$endlist
+$component C207
+ SM*
+ C?
+ C1-1
+$endlist
+$component C210
+ CP*
+ SM*
+$endlist
+$component C208
+ SM*
+ C?
+ C1-1
+$endlist
+$component C206
+ SM*
+ C?
+ C1-1
+$endlist
+$component C211
+ CP*
+ SM*
+$endlist
+$component C209
+ SM*
+ C?
+ C1-1
+$endlist
+$component U202
+ TO*
+$endlist
+$component C213
+ CP*
+ SM*
+$endlist
+$component D201
+ D?
+ S*
+$endlist
+$component D202
+ D?
+ S*
+$endlist
+$component C214
+ CP*
+ SM*
+$endlist
+$component C205
+ SM*
+ C?
+ C1-1
+$endlist
+$component C212
+ SM*
+ C?
+ C1-1
+$endlist
+$component R202
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R201
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component C215
+ SM*
+ C?
+ C1-1
+$endlist
+$component C201
+ CP*
+ SM*
+$endlist
+$component C202
+ SM*
+ C?
+ C1-1
+$endlist
+$component Q301
+ SOT23*
+ SC59*
+$endlist
+$component R302
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R303
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R301
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R304
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component D302
+ D?
+ SO*
+ SM*
+$endlist
+$component D301
+ D?
+ S*
+$endlist
+$endfootprintlist
+}
+{ Pin List by Nets
+Net 1 "/Mouse input control/OVERFLOW" "OVERFLOW"
+ U402 39
+ R101 1
+Net 2 "/Mouse input control/D7" "D7"
+ U402 27
+ J102 6
+Net 3 "/Mouse input control/RST" "RST"
+ J102 4
+ U402 36
+Net 4 "" ""
+ J104 10
+ SW101 2
+Net 5 "/Mouse input control/UNDERFLOW" "UNDERFLOW"
+ U402 37
+ R102 1
+Net 6 "/Mouse input control/D0" "D0"
+ J101 3
+ U402 18
+Net 7 "/Mouse input control/D1" "D1"
+ U402 19
+ J101 4
+Net 8 "/Mouse input control/D2" "D2"
+ J102 2
+ U402 20
+Net 9 "/Mouse input control/D3" "D3"
+ U402 21
+ J104 3
+Net 10 "/Mouse input control/D4" "D4"
+ J101 7
+ U402 24
+Net 11 "/Mouse input control/D5" "D5"
+ J101 2
+ U402 25
+Net 12 "/Mouse input control/D6" "D6"
+ U402 26
+ J102 7
+Net 13 "12V" "12V"
+ D301 2
+ U302 7
+ L301 1
+ C201 1
+ U303 4
+ U303 8
+ C202 1
+ U201 VI
+ U202 3
+ C207 1
+ C206 1
+ P101 2
+Net 14 "GND" "GND"
+ U203 1
+ C205 2
+ C206 2
+ C208 2
+ C210 2
+ C207 2
+ U201 GND
+ C215 2
+ C212 2
+ C214 1
+ C201 2
+ C202 2
+ U303 1
+ C402 2
+ R410 2
+ D404 1
+ C401 2
+ R406 2
+ D403 1
+ R405 2
+ D402 1
+ D302 1
+ U301 2
+ D401 1
+ R404 2
+ U402 10
+ U402 30
+ U402 22
+ Q301 2
+ U402 42
+ R303 2
+ C209 2
+ D102 2
+ D101 2
+ U101 4
+ J102 1
+ J103 2
+ C211 2
+ P101 1
+ U202 1
+ SW101 1
+ D201 2
+Net 15 "WEN" "WEN"
+ J101 9
+ U101 3
+Net 23 "B_SENSE" "B_SENSE"
+ R304 2
+ D302 2
+ J103 9
+Net 26 "PWR_OUT" "PWR_OUT"
+ Q301 1
+ J104 2
+Net 32 "5V" "5V"
+ J103 1
+ X401 1
+ U203 4
+ U203 8
+ R407 1
+ C208 1
+ C210 1
+ U201 VO
+ U301 1
+Net 33 "/CS" "/CS"
+ U101 1
+ J101 10
+Net 37 "MOSI" "MOSI"
+ J101 8
+ U101 5
+Net 40 "MISO" "MISO"
+ J102 8
+ U101 2
+Net 42 "SPICLK" "SPICLK"
+ J102 10
+ U101 6
+Net 43 "" ""
+ R101 2
+ D101 1
+Net 44 "" ""
+ R102 2
+ D102 1
+Net 45 "-12V" "-12V"
+ C214 2
+ D202 1
+ U302 4
+ C215 1
+Net 46 "3.3V" "3.3V"
+ U402 3
+ U402 15
+ U402 35
+ U402 23
+ C211 1
+ C209 1
+ U202 2
+ U101 8
+ U101 7
+Net 47 "" ""
+ U303 2
+ U303 6
+ R202 1
+ C212 1
+Net 48 "" ""
+ R202 2
+ R201 2
+ U303 7
+Net 49 "" ""
+ D202 2
+ C213 2
+ D201 1
+Net 50 "" ""
+ C213 1
+ U303 3
+ R201 1
+Net 51 "" ""
+ U303 5
+ C205 1
+Net 52 "" ""
+ R302 2
+ R303 1
+ U302 2
+Net 53 "" ""
+ R302 1
+ R301 2
+Net 54 "" ""
+ D301 1
+ Q301 3
+ L301 2
+Net 56 "" ""
+ U301 3
+ U302 3
+Net 58 "" ""
+ R304 1
+ R301 1
+ U302 6
+Net 60 "" ""
+ R403 1
+ X401 4
+Net 61 "" ""
+ C401 1
+ U203 5
+Net 64 "" ""
+ U402 33
+ R403 2
+ D403 2
+ R406 1
+Net 69 "" ""
+ R405 1
+ D402 2
+ U402 31
+ R402 2
+Net 81 "" ""
+ U402 29
+ R401 2
+ D401 2
+ R404 1
+Net 86 "" ""
+ X401 3
+ R402 1
+Net 87 "" ""
+ X401 2
+ R401 1
+Net 88 "" ""
+ C402 1
+ R408 1
+ U203 6
+ U203 2
+Net 89 "" ""
+ R409 1
+ U203 3
+Net 90 "" ""
+ U402 43
+ D404 2
+ R410 1
+ R409 2
+Net 91 "" ""
+ U203 7
+ R407 2
+ R408 2
+}
+#End

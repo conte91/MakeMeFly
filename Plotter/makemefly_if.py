@@ -48,12 +48,16 @@ class myInterface():
         self.gp=0
         self.ur=0
         self.dr=0
+        self.bM=0
+        self.bm=0
         self.l=[]
 
         self.gainBase=[]
         self.gainPos=[]
         self.upRate=[]
         self.downRate=[]
+        self.BMax=0
+        self.BMin=0
         self.level=[]
 
         self.nData=1000
@@ -124,6 +128,8 @@ class myInterface():
             gp=self.gp
             ur=self.ur
             dr=self.dr
+            bmax=self.bM
+            bmin=self.bm
             l=self.l
             self.dataLock.release()
 
@@ -136,6 +142,12 @@ class myInterface():
             if(ur!=self.upRate):
                 self.upRate=ur
                 self.builder.get_object("upRateLabel").set_label("Charging step: "+str(self.upRate))
+            if(bmax!=self.BMax):
+                self.BMax=bmax
+                self.builder.get_object("BMaxLabel").set_label("ON field: "+str(self.BMax))
+            if(bmin!=self.BMin):
+                self.BMin=bmin
+                self.builder.get_object("BMinLabel").set_label("Base field: "+str(self.BMin))
             if(dr!=self.downRate):
                 self.downRate=dr
                 self.builder.get_object("downRateLabel").set_label("Discharging step: "+str(self.downRate))
@@ -160,6 +172,14 @@ class myInterface():
                     self.builder.get_object("outputUpImage").set_from_stock("gtk-no", Gtk.IconSize.BUTTON)
                     self.builder.get_object("outputUpLabel").set_label("Output up: OFF")
 
+            if(od!=self.outputDown):
+                self.outputDown=od
+                if(od):
+                    self.builder.get_object("outputDownImage").set_from_stock("gtk-yes", Gtk.IconSize.BUTTON)
+                    self.builder.get_object("outputDownLabel").set_label("Output down: ON")
+                else:
+                    self.builder.get_object("outputDownImage").set_from_stock("gtk-no", Gtk.IconSize.BUTTON)
+                    self.builder.get_object("outputDownLabel").set_label("Output down: OFF")
             if(od!=self.outputDown):
                 self.outputDown=od
                 if(od):
@@ -193,14 +213,16 @@ class myInterface():
                     if(self.getNext(1)==[0x56]):
                         if(self.getNext(1)==[0x54]):
                             break
-            data=self.getNext(10)
+            data=self.getNext(14)
             self.dataLock.acquire()
             self.l=int(data[0])*16;
             self.gp=float(data[2]*256+data[1]+(-65536 if data[2] & 0x80 else 0))/10000.0
             self.gb=float(data[4]*256+data[3]+(-65536 if data[4] & 0x80 else 0))/1000.0+1
             self.ur=float(data[6]*256+data[5]+(-65536 if data[6] & 0x80 else 0))/10000.0
             self.dr=float(data[8]*256+data[7]+(-65536 if data[8] & 0x80 else 0))/10000.0
-            state=data[9]
+            self.bM=(data[10]*256+data[9])
+            self.bm=(data[12]*256+data[11])
+            state=data[13]
             self.sw=state & 0x01
             self.ou=state & 0x02
             self.od=state & 0x04
@@ -211,6 +233,7 @@ class myInterface():
                 filteredValue=float(values[1]*256+data[0]+(-65536 if data[1] & 0x80 else 0))/256.0
                 coilB=float(values[3]*256+data[2]+(-65536 if data[1] & 0x80 else 0))/256.0
                 B=float(values[5]*256+data[4]+(-65536 if data[1] & 0x80 else 0))/256.0
+                #print(str(filteredValue)+" "+str(coilB)+" "+str(B))
                 self.printDataLock.acquire()
                 self.BData.append(B)
                 self.coilBData.append(coilB)

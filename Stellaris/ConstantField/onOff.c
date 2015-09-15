@@ -337,12 +337,18 @@ char tareSensorValues(){
   /** Wait for the magnet to stabilize, then take the sensor reading */
   coil(0);
   waitN(ADC_FREQUENCY);
+  waitN(ADC_FREQUENCY);
+  waitN(ADC_FREQUENCY);
   BMin=averageADC(100);
   coil(1);
+  waitN(ADC_FREQUENCY);
+  waitN(ADC_FREQUENCY);
   waitN(ADC_FREQUENCY);
   BMax=averageADC(100);
   BMax=BOf(BMax);
   coil(0);
+  waitN(ADC_FREQUENCY);
+  waitN(ADC_FREQUENCY);
   waitN(ADC_FREQUENCY);
 
   uint32_t sumUp=0, sumDown=0;
@@ -362,10 +368,11 @@ char tareSensorValues(){
 }
 void setupSPI(){
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+  //SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
   SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI0);
-  /* Manual CS on PF.4 */
+  /* Manual CS on PF.7 */
   GPIOPinTypeGPIOOutput(GPIO_PORTA_BASE, GPIO_PIN_7);
+  GPIOPinTypeGPIOInput(GPIO_PORTA_BASE, GPIO_PIN_6);
   GPIOPinConfigure(GPIO_PA2_SSI0CLK);
   //GPIOPinConfigure(GPIO_PA3_SSI0FSS);
   GPIOPinConfigure(GPIO_PA4_SSI0RX);
@@ -373,6 +380,7 @@ void setupSPI(){
   GPIOPinTypeSSI(GPIO_PORTA_BASE, GPIO_PIN_5 | GPIO_PIN_4 | GPIO_PIN_2);
   SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, 1000000, 8);
   SSIEnable(SSI0_BASE);
+  cs(1);
   char error[23]="Wrong flash ID! xxxxxx\n";
   uint32_t n=readFlashID();
   if(n!=0x00373014){
@@ -392,11 +400,14 @@ void setupGPIO(){
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB); 
   GPIOPinTypeGPIOInput(GPIO_PORTB_BASE, 0xFF); 
 
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE); //Enable Port F Peripheral
+  GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_0);
   /* For LEDs */
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); //Enable Port F Peripheral
   GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_4); 
   GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_4, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPU);
   GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_3|GPIO_PIN_2|GPIO_PIN_1);
+  GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_0);
 }
 
 void writeCalibrationToFlash(){
@@ -436,10 +447,19 @@ int main(void)
 
   setupGPIO();
   setupUART();
+  SysCtlDelay(SysCtlClockGet());
   setupSPI();
   setupADC();
   spettacolino();
   IntMasterEnable();
+
+  /** Resets the CPLD */
+  GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0);
+  SysCtlDelay(SysCtlClockGet()/1000);
+  GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, GPIO_PIN_0);
+  SysCtlDelay(SysCtlClockGet()/1000);
+  GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0);
+  SysCtlDelay(SysCtlClockGet()/1000);
 
   //heatUp();
   led(1);
@@ -457,6 +477,7 @@ int main(void)
   {
     /** Sync */
     wait();
+
     led(1);
     if(mustWriteData){
       writeCalibrationToFlash();
@@ -486,6 +507,8 @@ int main(void)
       case 2:
         send( (int16_t) (upRate*10000) );
         send( (int16_t) (downRate*10000) );
+        send( (int16_t) (BMax));
+        send( (int16_t) (BMin));
         break;
       case 3:
         sw=squareWave;
