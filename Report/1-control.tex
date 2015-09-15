@@ -8,8 +8,6 @@ The main problem in using a single Hall-effect sensor placed under the electroma
   \item{\emph{Magnetic field} is measured in \emph{bits}, which correspond to 1 ADC bit. In order to keep this scale proportional to the read magnetic field in $G$, the base sensor value (measured once as a calibration constant) is always subtracted from the ADC reading and the resulting value is negated;}
   \item{\emph{Voltage} on the coil is measured as a digital value, which is 0 with the controlling transistor turned off ($0V$) and 1 with the same transistor turned on ($12V$);}
   \item{\emph{Current} into the coil is measured in \emph{value}, which is 0 when no current flows into the magnet and 1 when full current ($I=12/R_{coil}$) flows into it. Magnetic field of the coil is proportional to its \emph{value}.}
-
-
 \end{itemize}
 
 With these units, the coil's model obeys the usual laws of RL circuits (assuming I(0) is the starting current into the coil when the coil is turned on or off):
@@ -56,3 +54,6 @@ $D$ and $U$ are the charging and discharging rates of the coil, and, after measu
 \]
 
 So, at each control step, the magnetic field is read from the sensor, and to it the simulated coil's field $B_{max}I(t)$ is subtracted. The remaining value indicates the position of the permanent magnet, which can thus be controlled. If the output of the controller is higher than the current coil's field, the coil is turned on. Otherwise, the coil is turned off.
+
+In practice, this means that the coil acts as an integrator and sees as an input the pulses from the microcontroller. The circuit thus acts as a Delta-Sigma DAC: the microcontroller sends pulses of fixed width of $10^(-4) s$, each pulse being 0 or 1 depending on whether the desired reference (analog) signal to apply to the coil is, at each time instant, higher or lower than the integrator's (i.e. the coil's) actual output value. The feedback for this DAC, i.e. the output of the coil, is not measured but simulated from the microcontroller.
+
