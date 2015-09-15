@@ -11,3 +11,5 @@ work/
 *.aux
 *.lib
 *.kicad_pcb-bak
+*-eps-converted-to.pdf
+*.log

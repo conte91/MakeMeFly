@@ -1,0 +1,19 @@
+\section{Microcontroller's software}
+The control work is done by the on-board TI Stellaris microcontroller, which is an 80MHz ARM processor. All the control software is written in C.
+First, the microcontroller initializes itself, enables the floating point unit and calls the \pre{main()} function, which is the entry point of the application.
+
+Within \pre{main()}, the processor initializes all the required peripherals: GPIO (for LEDs, CPLD parallel communication, input button and coil output), UART (for PC communication through the on-board UART-USB converter), SPI (for flash memory) and ADC (for sampling the sensor).
+
+Afterwards, the microcontroller reads its calibration constants from the onboard flash memory and enters the main control loop.
+
+A spinlock variable is unlocked at a constant frequency of 10kHz from the ADC's interrupt, which before unlocking it updates the sensor's reading \pre{lastADC} and the computed magnetic field \pre{B}. The \pre{wait()} function waits on the spinlock variable and thus is used to synchronize on the 10kHz timer: after it returns, the main loop knows that a new reading is available and control must be updated.
+
+The reference magnetic field is read at each step from port B of the microcontroller, which is connected to the output of the mouse-controlled CPLD. Then a bunch of informations is sent to the UART port - only some bytes at a time are sent, so that the UART FIFOs are never overfilled. Finally, the control is done: the value of the simulated coil's magnetic field is recomputed based on the previous step's output, to obtain the filtered (i.e. permanent magnet alone) magnetic field's value, and a simple proportional control is done over this value. If the output of the controller is greater than the current coil's field, the coil is turned on. Otherwise, it is turned off.
+
+Three special events can occour during the loop: if pin F4 is read to be 0, the tare button has been pressed. Thus, the control is stalled and the calibration constants are recomputed using \pre{tareSensorValues()}. This function first of all tares the reference reading BMin averaging 100 sensor readings after some seconds with the coil turned off, then tares the reading's swing BMax with the coil turned on. After doing this, the charging and discharging time constants (and thus rates) of the coil are computed by averaging the number of time ticks the magnetic field takes to pass from 0\% to 63\% of the total swing.
+
+If, during operation, the \pre{squareWave} flag is activated via the \pre{s} UART command, the proportional controller is bypassed and a square wave is sent in output to the coil with a fixed frequency of 10Hz. This can be used in conjunction with the data logging feature of UART to refine the calibration constants \pre{upRate} and \pre{downRate}: as the sensor reading is always filtered to remove the coil's magnetic field, with a correct calibration a constant value of 0 should be read even if the square wave is present (if the permanent magnet is removed). If this doesn't happen, the PC interface can be used to increase or decrease the constants and then save them again when they are correct.
+
+The last event that can occour is the PC asking the device to save its constants in flash memory. In this case, control is stalled again and communication is initiated with the flash memory, on which the constant are first saved (as a char*) at a fixed address and then read again to check for correctness.
+
+The two interrupt routines are set up before the control loop: the first one, \pre{ADCHandler}, updates the shared variables with the sensor readings, while the second one, \pre{UARTHandler}, is called whenever a new byte arrives into the UART FIFO. In this case a command is executed based on the received character. Commands include modification of the calibration constants, square wave output toggling and enabling flash memory dump of the constants.

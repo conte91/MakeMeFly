@@ -1,0 +1,12 @@
+\section{Introduction}
+Magnetic levitation is a common task in control, consisting in keeping an object floating in mid-air by pulling it in a controlled manner with an electromagnet from the top, and is usually performed using a serie of binary position sensors, like infrared or light sensors. When the object passes the reference sensor going downward, the coil is activated and the object is thus moved upwards, and viceversa.
+
+This project aims to present a different approach using a single, linear Hall effect sensor placed under the coil, which output is filtered in order to remove the coil's magnetic influence and thus sense only the object's position.
+
+A central microcontroller (TI Stellaris) is in charge of the whole control algorithm. The position of the object can be set at runtime using mouse buttons, connected to a CPLD which keeps track of the desired position. Input and output of data to a PC for logging, monitoring and calibration is provided but not strictly needed, as the device is capable of rough self-calibration and can store and load its calibration data from the onboard flash memory.
+
+A python interface has been written to display the received data from the microcontroller and configure its parameters in an easy way.
+
+The whole code for the project can be found on GitHub (Conte91/MakeMeFly).
+
+Some self-notes written during the development can be found on Wordpress (https://tux4u.wordpress.com).
