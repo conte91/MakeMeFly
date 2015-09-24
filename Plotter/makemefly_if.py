@@ -15,6 +15,7 @@ from gi.repository import Gtk
 from matplotlib.figure import Figure
 from matplotlib.axes import Subplot
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg as PlotCanvas
+import numpy as np
 
 class myInterface():
 
@@ -64,6 +65,9 @@ class myInterface():
         self.BData=deque(maxlen=1000)
         self.filteredValueData=deque(maxlen=1000)
         self.coilBData=deque(maxlen=1000)
+        self.BData.append(0)
+        self.filteredValueData.append(0)
+        self.coilBData.append(0)
         self.XData=[0.0004*x for x in range(0,1000)]
 
         self.window=self.builder.get_object("mainWindow")
@@ -71,30 +75,28 @@ class myInterface():
 
         #Start of Matplotlib specific code
         ##########################################################################
-        #self.figure = Figure(figsize=(8,6), dpi=71)
-        #self.axisB = self.figure.add_subplot(311)
-        #self.axisB.set_xlabel('Time (s)')
-        #self.axisB.set_ylabel('Measured magnetic field')
+        self.figure = Figure(figsize=(8,6), dpi=71)
+        self.axisB = self.figure.add_subplot(311)
+        self.axisB.set_xlabel('Time (ticks)')
+        self.axisB.set_ylabel('Measured magnetic field')
 
-        #self.axisBC = self.figure.add_subplot(313)
-        #self.axisBC.set_xlabel('Time (s)')
-        #self.axisBC.set_ylabel('Emulated magnetic field')
+        self.axisBC = self.figure.add_subplot(313)
+        self.axisBC.set_xlabel('Time (s)')
+        self.axisBC.set_ylabel('Emulated magnetic field')
 
-        #self.axisFV = self.figure.add_subplot(312)
-        #self.axisFV.set_xlabel('Time (s)')
-        #self.axisFV.set_ylabel('Filtered magnetic field')
+        self.axisFV = self.figure.add_subplot(312)
+        self.axisFV.set_xlabel('Time (s)')
+        self.axisFV.set_ylabel('Filtered magnetic field')
 
-        #self.plotCanvas = PlotCanvas(self.figure)  # a Gtk.DrawingArea
-        #self.plotCanvas.set_size_request(500,600)
-        #a=[0]
-        #self.plotB=self.axisB.plot(a)[0]
-        #self.axisB.draw()
-        #self.plotBC=self.axisBC.plot(a)[0]
-        #self.axisBC.draw()
-        #self.plotFV=self.axisFV.plot(a)[0]
-        #self.axisFV.draw()
+        self.plotCanvas = PlotCanvas(self.figure)  # a Gtk.DrawingArea
+        self.plotCanvas.set_size_request(500,600)
+        a=[0]
+        self.plotB=self.axisB.plot(a)[0]
+        self.plotBC=self.axisBC.plot(a)[0]
+        self.plotFV=self.axisFV.plot(a)[0]
+        self.plotCanvas.draw()
 
-        #self.builder.get_object("plotGrid").attach(self.plotCanvas, 0,2,1,1)
+        self.builder.get_object("plotGrid").attach(self.plotCanvas, 0,2,1,1)
         self.window.show_all()
         self.window.connect("destroy", Gtk.main_quit)
 
@@ -105,6 +107,8 @@ class myInterface():
         self.consumeDataThread.start()
         self.updateIFTimer=Thread(target=self.updateIF)
         self.updateIFTimer.start()
+        self.updPlotThread=Thread(target=self.updatePlot)
+        self.updPlotThread.start()
 
     def getNext(self, requested):
         while(len(self.buf)<requested):
@@ -188,23 +192,34 @@ class myInterface():
                 else:
                     self.builder.get_object("outputDownImage").set_from_stock("gtk-no", Gtk.IconSize.BUTTON)
                     self.builder.get_object("outputDownLabel").set_label("Output down: OFF")
-            #self.printDataLock.acquire()
-            #n=len(self.BData)
-#Note for th#e reader: 
-#While I was# writing this code, a thief came into my house and tried stealing my car; I bravely run to him shouting and made him run away. Don't expect this code to be clean anymore.
-# (True stor#y!)
-            #self.plotB.set_xdata(self.XData[:n])
-            #self.plotB.set_ydata(self.BData)
-
-            #self.plotBC.set_xdata(self.XData[:n])
-            #self.plotBC.set_ydata(self.coilBData)
-
-            #self.plotFV.set_xdata(self.XData[:n])
-            #self.plotFV.set_ydata(self.filteredValueData)
-            #self.printDataLock.release()
             sleep(0.1)
 
 
+    def updatePlot(self):
+        while(True):
+            self.printDataLock.acquire()
+#Note for the reader: 
+#While I was writing this code, a thief came into my house and tried stealing my car; I bravely run to him shouting and made him run away. Don't expect this code to be clean anymore.
+# (True story!)
+            self.axisB.set_xbound(lower=0,upper=len(self.BData))
+            self.axisB.set_ybound(lower=min(self.BData), upper=len(self.BData))
+            self.plotB.set_xdata(np.arange(len(self.BData)))
+            self.plotB.set_ydata(np.array(self.BData))
+            #self.plotB.set_xdata(self.XData[:n])
+            #self.plotB.set_ydata(self.BData)
+
+            self.axisBC.set_xbound(lower=0,upper=len(self.coilBData))
+            self.axisBC.set_ybound(lower=min(self.coilBData), upper=len(self.coilBData))
+            self.plotBC.set_xdata(np.arange(len(self.coilBData)))
+            self.plotBC.set_ydata(np.array(self.coilBData))
+
+            self.axisFV.set_xbound(lower=0,upper=len(self.filteredValueData))
+            self.axisFV.set_ybound(lower=min(self.filteredValueData), upper=len(self.filteredValueData))
+            self.plotFV.set_xdata(np.arange(len(self.filteredValueData)))
+            self.plotFV.set_ydata(np.array(self.filteredValueData))
+            self.plotCanvas.draw()
+            self.printDataLock.release()
+            sleep(0.2)
     def consumeData(self):
         while(not self.inhibited):
 #Waits for sync
