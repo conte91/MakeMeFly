@@ -524,7 +524,7 @@ int main(void)
           send(B*256);
         }
         break;
-     }
+    }
 
     whatImSendingNow++;
     if(whatImSendingNow==4){

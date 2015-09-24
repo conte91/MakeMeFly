@@ -59,6 +59,7 @@
   </object>
   <object class="GtkWindow" id="mainWindow">
     <property name="can_focus">False</property>
+    <signal name="draw" handler="updateIF" swapped="no"/>
     <child>
       <object class="GtkGrid" id="mainGrid">
         <property name="visible">True</property>

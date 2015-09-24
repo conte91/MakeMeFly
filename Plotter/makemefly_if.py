@@ -81,11 +81,11 @@ class myInterface():
         self.axisB.set_ylabel('Measured magnetic field')
 
         self.axisBC = self.figure.add_subplot(313)
-        self.axisBC.set_xlabel('Time (s)')
+        self.axisBC.set_xlabel('Time (ticks)')
         self.axisBC.set_ylabel('Emulated magnetic field')
 
         self.axisFV = self.figure.add_subplot(312)
-        self.axisFV.set_xlabel('Time (s)')
+        self.axisFV.set_xlabel('Time (ticks)')
         self.axisFV.set_ylabel('Filtered magnetic field')
 
         self.plotCanvas = PlotCanvas(self.figure)  # a Gtk.DrawingArea
@@ -105,10 +105,6 @@ class myInterface():
         self.recvThread.start()
         self.consumeDataThread=Thread(target=self.consumeData)
         self.consumeDataThread.start()
-        self.updateIFTimer=Thread(target=self.updateIF)
-        self.updateIFTimer.start()
-        self.updPlotThread=Thread(target=self.updatePlot)
-        self.updPlotThread.start()
 
     def getNext(self, requested):
         while(len(self.buf)<requested):
@@ -121,8 +117,7 @@ class myInterface():
         self.bufLock.release()
         return values
 
-    def updateIF(self):
-        while(1):
+    def updateIF(self, a,b):
             self.dataLock.acquire()
             sw=self.sw
             ou=self.ou
@@ -192,11 +187,6 @@ class myInterface():
                 else:
                     self.builder.get_object("outputDownImage").set_from_stock("gtk-no", Gtk.IconSize.BUTTON)
                     self.builder.get_object("outputDownLabel").set_label("Output down: OFF")
-            sleep(0.1)
-
-
-    def updatePlot(self):
-        while(True):
             self.printDataLock.acquire()
 #Note for the reader: 
 #While I was writing this code, a thief came into my house and tried stealing my car; I bravely run to him shouting and made him run away. Don't expect this code to be clean anymore.
@@ -219,7 +209,7 @@ class myInterface():
             self.plotFV.set_ydata(np.array(self.filteredValueData))
             self.plotCanvas.draw()
             self.printDataLock.release()
-            sleep(0.2)
+
     def consumeData(self):
         while(not self.inhibited):
 #Waits for sync
